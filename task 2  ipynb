@@ -1,0 +1,63 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM7bmRCpAHSqKCuM85NMfWn",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/tejureddy13/problem-solving-and-test/blob/main/task%202%20%20ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import java.util.*;\n",
+        "\n",
+        "public class MaximumProfit {\n",
+        "    public static void main(String[] args) {\n",
+        "        Scanner sc = new Scanner(System.in);\n",
+        "\n",
+        "        int n = sc.nextInt();\n",
+        "        int[] arr = new int[n];\n",
+        "\n",
+        "        for (int i = 0; i < n; i++)\n",
+        "            arr[i] = sc.nextInt();\n",
+        "\n",
+        "        int currentSum = arr[0];\n",
+        "        int maxSum = arr[0];\n",
+        "\n",
+        "        for (int i = 1; i < n; i++) {\n",
+        "            currentSum = Math.max(arr[i], currentSum + arr[i]);\n",
+        "            maxSum = Math.max(maxSum, currentSum);\n",
+        "        }\n",
+        "\n",
+        "        System.out.println(maxSum);\n",
+        "    }\n",
+        "}"
+      ],
+      "metadata": {
+        "id": "bOo9FJ7rzUZy"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
