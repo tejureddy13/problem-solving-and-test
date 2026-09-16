@@ -1,0 +1,32 @@
+def is_lapindrome(s):
+  n = len(s)
+  mid = n // 2
+
+  # Left half and right half
+  left = s[:mid]
+  right = s[n - mid :]
+
+  # Compare sorted character counts/frequencies
+  return sorted(left) == sorted(right)
+
+
+def main():
+  import sys
+
+  input = sys.stdin.read
+  data = input().split()
+
+  if not data:
+    return
+
+  t = int(data[0])
+  for i in range(1, t + 1):
+    s = data[i]
+    if is_lapindrome(s):
+      print("YES")
+    else:
+      print("NO")
+
+
+if __name__ == "__main__":
+  main()
