@@ -1,0 +1,14 @@
+def is_lapindrome(s):
+  n = len(s)
+  left = s[: n // 2]
+  right = s[(n + 1) // 2 :]
+  return sorted(left) == sorted(right)
+
+
+t = int(input())
+for _ in range(t):
+  s = input().strip()
+  if is_lapindrome(s):
+    print("YES")
+  else:
+    print("NO")
