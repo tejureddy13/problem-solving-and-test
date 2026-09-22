@@ -1,0 +1,40 @@
+class Solution {
+    // public int maxSubArray(int[] nums) {
+    //     int n=nums.length;
+    //      int maxsum=Integer.MIN_VALUE;
+    //     for(int i=0;i<n;i++){
+            
+    //         for(int j=i;j<n;j++){
+    //             int sum=0;
+    //             for(int k=i;k<=j;k++){
+    //                 sum +=nums[k];
+    //             }
+
+
+    //             if(sum>maxsum){
+    //                 maxsum=sum;
+    //             }
+    //         }
+    //     }
+    //     return maxsum;
+    // }
+
+
+
+    public int maxSubArray(int[] nums) {
+        // kadanes algo
+        //O(n)
+        //O(1)
+        int n=nums.length;
+         int maxsum=Integer.MIN_VALUE;
+         int cs=0;
+        for(int i=0;i<n;i++){
+            cs +=nums[i];
+            maxsum =Math.max(cs,maxsum);
+           if(cs<0){
+                cs=0;
+           }
+        }
+        return maxsum;
+    }
+}
