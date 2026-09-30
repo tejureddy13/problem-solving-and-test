@@ -1,0 +1,9 @@
+static Iterator func(ArrayList mylist) {
+    Iterator it = mylist.iterator();
+    while (it.hasNext()) {
+        Object element = it.next(); // Line 1: Get the current element
+        if (element.equals("###")) // Line 2: Break when the delimiter is found
+            break;
+    }
+    return it;
+}
