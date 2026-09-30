@@ -1,0 +1,11 @@
+public class TextBlockExample {
+    public static void main(String[] args) {
+        // The backslash keeps this text on a single line in the output
+        String longLine = """
+                This is a very long sentence that we want to write \
+                on multiple lines in our source code, but print out \
+                as a single line without any newlines.""";
+        
+        System.out.println(longLine);
+    }
+}
