@@ -1,0 +1,23 @@
+import java.io.*;
+import java.util.*;
+
+class Singleton {
+    // 1. A public String instance variable named 'str'
+    public String str;
+    
+    // A private static variable to hold the single instance of the class
+    private static Singleton instance;
+
+    // 2. A private Singleton non-parameterized constructor
+    private Singleton() {
+        // Prevents direct instantiation from outside the class
+    }
+
+    // 3. A static method named getSingleInstance that returns the single instance
+    public static Singleton getSingleInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
