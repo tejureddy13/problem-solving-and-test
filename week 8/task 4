@@ -1,0 +1,244 @@
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+enum Color {
+    RED, GREEN
+}
+
+abstract class Tree {
+    private int value;
+    private Color color;
+    private int depth;
+
+    public Tree(int value, Color color, int depth) {
+        this.value = value;
+        this.color = color;
+        this.depth = depth;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public abstract void accept(TreeVis visitor);
+}
+
+class TreeNode extends Tree {
+    private ArrayList<Tree> children = new ArrayList<>();
+
+    public TreeNode(int value, Color color, int depth) {
+        super(value, color, depth);
+    }
+
+    public void accept(TreeVis visitor) {
+        visitor.visitNode(this);
+        for (Tree child : children) {
+            child.accept(visitor);
+        }
+    }
+
+    public void addChild(Tree child) {
+        children.add(child);
+    }
+}
+
+class TreeLeaf extends Tree {
+    public TreeLeaf(int value, Color color, int depth) {
+        super(value, color, depth);
+    }
+
+    public void accept(TreeVis visitor) {
+        visitor.visitLeaf(this);
+    }
+}
+
+abstract class TreeVis {
+    public abstract int getResult();
+    public abstract void visitNode(TreeNode node);
+    public abstract void visitLeaf(TreeLeaf leaf);
+}
+
+class SumInLeavesVisitor extends TreeVis {
+    private int result = 0;
+
+    public int getResult() {
+        return result;
+    }
+
+    public void visitNode(TreeNode node) {
+        // We only sum leaf values, do nothing for internal nodes
+    }
+
+    public void visitLeaf(TreeLeaf leaf) {
+        result += leaf.getValue();
+    }
+}
+
+class ProductRedNodesVisitor extends TreeVis {
+    private long result = 1;
+    private final int MOD = 1000000007;
+
+    public int getResult() {
+        return (int) result;
+    }
+
+    public void visitNode(TreeNode node) {
+        if (node.getColor() == Color.RED) {
+            result = (result * node.getValue()) % MOD;
+        }
+    }
+
+    public void visitLeaf(TreeLeaf leaf) {
+        if (leaf.getColor() == Color.RED) {
+            result = (result * leaf.getValue()) % MOD;
+        }
+    }
+}
+
+class FancyVisitor extends TreeVis {
+    private int nonLeafEvenDepthSum = 0;
+    private int greenLeafSum = 0;
+
+    public int getResult() {
+        return Math.abs(nonLeafEvenDepthSum - greenLeafSum);
+    }
+
+    public void visitNode(TreeNode node) {
+        if (node.getDepth() % 2 == 0) {
+            nonLeafEvenDepthSum += node.getValue();
+        }
+    }
+
+    public void visitLeaf(TreeLeaf leaf) {
+        if (leaf.getColor() == Color.GREEN) {
+            greenLeafSum += leaf.getValue();
+        }
+    }
+}
+
+public class Solution {
+  
+    public static Tree solve() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String line = br.readLine();
+            if (line == null || line.trim().isEmpty()) return null;
+            int n = Integer.parseInt(line.trim());
+
+            int[] values = new int[n + 1];
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for (int i = 1; i <= n; i++) {
+                values[i] = Integer.parseInt(st.nextToken());
+            }
+
+            Color[] colors = new Color[n + 1];
+            st = new StringTokenizer(br.readLine());
+            for (int i = 1; i <= n; i++) {
+                colors[i] = (Integer.parseInt(st.nextToken()) == 0) ? Color.RED : Color.GREEN;
+            }
+
+            // Create adjacency list representation of the graph
+            ArrayList<Integer>[] adj = new ArrayList[n + 1];
+            for (int i = 1; i <= n; i++) {
+                adj[i] = new ArrayList<>();
+            }
+
+            for (int i = 0; i < n - 1; i++) {
+                line = br.readLine();
+                if (line == null) break;
+                st = new StringTokenizer(line);
+                int u = Integer.parseInt(st.nextToken());
+                int v = Integer.parseInt(st.nextToken());
+                adj[u].add(v);
+                adj[v].add(u);
+            }
+
+            // If the tree consists of only 1 node, it must be created as a TreeLeaf
+            if (n == 1) {
+                return new TreeLeaf(values[1], colors[1], 0);
+            }
+
+            // BFS initialization to discover tree structural relations (parent-child mappings)
+            Tree[] nodes = new Tree[n + 1];
+            int[] depths = new int[n + 1];
+            boolean[] isLeaf = new boolean[n + 1];
+            int[] parent = new int[n + 1];
+            
+            Queue<Integer> queue = new ArrayDeque<>();
+            boolean[] visited = new boolean[n + 1];
+
+            queue.add(1);
+            visited[1] = true;
+            depths[1] = 0;
+
+            ArrayList<Integer> order = new ArrayList<>();
+
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+                order.add(u);
+                boolean hasChildren = false;
+                for (int v : adj[u]) {
+                    if (!visited[v]) {
+                        visited[v] = true;
+                        depths[v] = depths[u] + 1;
+                        parent[v] = u;
+                        queue.add(v);
+                        hasChildren = true;
+                    }
+                }
+                isLeaf[u] = !hasChildren;
+            }
+
+            // Instantiate components bottom-up or sequentially based on depth constraints
+            for (int i = 1; i <= n; i++) {
+                if (isLeaf[i]) {
+                    nodes[i] = new TreeLeaf(values[i], colors[i], depths[i]);
+                } else {
+                    nodes[i] = new TreeNode(values[i], colors[i], depths[i]);
+                }
+            }
+
+            // Connect children to their respective parents
+            for (int i = 2; i <= n; i++) {
+                int p = parent[i];
+                ((TreeNode) nodes[p]).addChild(nodes[i]);
+            }
+
+            return nodes[1];
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        Tree root = solve();
+        SumInLeavesVisitor visitor1 = new SumInLeavesVisitor();
+        ProductRedNodesVisitor visitor2 = new ProductRedNodesVisitor();
+        FancyVisitor visitor3 = new FancyVisitor();
+
+        root.accept(visitor1);
+        root.accept(visitor2);
+        root.accept(visitor3);
+
+        int res1 = visitor1.getResult();
+        int res2 = visitor2.getResult();
+        int res3 = visitor3.getResult();
+
+        System.out.println(res1);
+        System.out.println(res2);
+        System.out.println(res3);
+    }
+}
